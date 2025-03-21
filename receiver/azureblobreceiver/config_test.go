@@ -38,7 +38,6 @@ func TestLoadConfig(t *testing.T) {
 			Authentication:   ConnectionStringAuth,
 			ConnectionString: goodConnectionString,
 			Logs:             LogsConfig{ContainerName: logsContainerName},
-			Traces:           TracesConfig{ContainerName: tracesContainerName},
 			Cloud:            defaultCloud,
 		},
 		receiver)
@@ -56,7 +55,6 @@ func TestLoadConfig(t *testing.T) {
 			},
 			StorageAccountURL: "https://accountName.blob.core.windows.net",
 			Logs:              LogsConfig{ContainerName: logsContainerName},
-			Traces:            TracesConfig{ContainerName: tracesContainerName},
 			Cloud:             defaultCloud,
 		},
 		receiver)

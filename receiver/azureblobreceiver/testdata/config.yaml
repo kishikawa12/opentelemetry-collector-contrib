@@ -10,8 +10,6 @@ receivers:
     storage_account_url: https://accountName.blob.core.windows.net
     logs:
       container_name: logs
-    traces:
-      container_name: traces
 
 processors:
   nop:
@@ -21,10 +19,6 @@ exporters:
 
 service:
   pipelines:
-    traces:
-      receivers: [azureblob]
-      processors: [nop]
-      exporters: [nop]
     logs:
       receivers: [azureblob]
       processors: [nop]

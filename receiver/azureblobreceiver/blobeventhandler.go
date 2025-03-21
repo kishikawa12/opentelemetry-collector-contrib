@@ -16,15 +16,12 @@ type blobEventHandler interface {
 	run(ctx context.Context) error
 	close(ctx context.Context) error
 	setLogsDataConsumer(logsDataConsumer logsDataConsumer)
-	setTracesDataConsumer(tracesDataConsumer tracesDataConsumer)
 }
 
 type azureBlobEventHandler struct {
 	blobClient               blobClient
 	logsDataConsumer         logsDataConsumer
-	tracesDataConsumer       tracesDataConsumer
 	logsContainerName        string
-	tracesContainerName      string
 	eventHubConnectionString string
 	hub                      *eventhub.Hub
 	logger                   *zap.Logger
@@ -95,11 +92,6 @@ func (p *azureBlobEventHandler) newMessageHandler(ctx context.Context, event *ev
 			if err != nil {
 				return err
 			}
-		case containerName == p.tracesContainerName:
-			err = p.tracesDataConsumer.consumeTracesJSON(ctx, blobData.Bytes())
-			if err != nil {
-				return err
-			}
 		default:
 			p.logger.Debug("Unknown container name", zap.String("containerName", containerName))
 		}
@@ -123,15 +115,10 @@ func (p *azureBlobEventHandler) setLogsDataConsumer(logsDataConsumer logsDataCon
 	p.logsDataConsumer = logsDataConsumer
 }
 
-func (p *azureBlobEventHandler) setTracesDataConsumer(tracesDataConsumer tracesDataConsumer) {
-	p.tracesDataConsumer = tracesDataConsumer
-}
-
-func newBlobEventHandler(eventHubConnectionString string, logsContainerName string, tracesContainerName string, blobClient blobClient, logger *zap.Logger) *azureBlobEventHandler {
+func newBlobEventHandler(eventHubConnectionString string, logsContainerName string, blobClient blobClient, logger *zap.Logger) *azureBlobEventHandler {
 	return &azureBlobEventHandler{
 		blobClient:               blobClient,
 		logsContainerName:        logsContainerName,
-		tracesContainerName:      tracesContainerName,
 		eventHubConnectionString: eventHubConnectionString,
 		logger:                   logger,
 	}

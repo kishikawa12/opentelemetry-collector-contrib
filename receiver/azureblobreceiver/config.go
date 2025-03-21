@@ -36,8 +36,6 @@ type Config struct {
 	EventHub EventHubConfig `mapstructure:"event_hub"`
 	// Logs related configurations
 	Logs LogsConfig `mapstructure:"logs"`
-	// Traces related configurations
-	Traces TracesConfig `mapstructure:"traces"`
 	// prevent unkeyed literal initialization
 	_ struct{}
 }
@@ -51,13 +49,6 @@ type EventHubConfig struct {
 
 type LogsConfig struct {
 	// Name of the blob container with the logs (default = "logs")
-	ContainerName string `mapstructure:"container_name"`
-	// prevent unkeyed literal initialization
-	_ struct{}
-}
-
-type TracesConfig struct {
-	// Name of the blob container with the traces (default = "traces")
 	ContainerName string `mapstructure:"container_name"`
 	// prevent unkeyed literal initialization
 	_ struct{}

@@ -19,9 +19,8 @@ import (
 )
 
 const (
-	logsContainerName   = "logs"
-	tracesContainerName = "traces"
-	defaultCloud        = AzureCloudType
+	logsContainerName = "insights-logs-flowlogflowevent"
+	defaultCloud      = AzureCloudType
 )
 
 var errUnexpectedConfigurationType = errors.New("failed to cast configuration to Azure Blob Config")
@@ -39,14 +38,12 @@ func NewFactory() receiver.Factory {
 	return receiver.NewFactory(
 		metadata.Type,
 		f.createDefaultConfig,
-		receiver.WithTraces(f.createTracesReceiver, metadata.TracesStability),
 		receiver.WithLogs(f.createLogsReceiver, metadata.LogsStability))
 }
 
 func (f *blobReceiverFactory) createDefaultConfig() component.Config {
 	return &Config{
 		Logs:           LogsConfig{ContainerName: logsContainerName},
-		Traces:         TracesConfig{ContainerName: tracesContainerName},
 		Authentication: ConnectionStringAuth,
 		Cloud:          defaultCloud,
 	}
@@ -66,22 +63,6 @@ func (f *blobReceiverFactory) createLogsReceiver(
 
 	receiver.(logsDataConsumer).setNextLogsConsumer(nextConsumer)
 
-	return receiver, nil
-}
-
-func (f *blobReceiverFactory) createTracesReceiver(
-	_ context.Context,
-	set receiver.Settings,
-	cfg component.Config,
-	nextConsumer consumer.Traces,
-) (receiver.Traces, error) {
-	receiver, err := f.getReceiver(set, cfg)
-	if err != nil {
-		set.Logger.Error(err.Error())
-		return nil, err
-	}
-
-	receiver.(tracesDataConsumer).setNextTracesConsumer(nextConsumer)
 	return receiver, nil
 }
 
@@ -148,6 +129,6 @@ func (f *blobReceiverFactory) getBlobEventHandler(cfg *Config, logger *zap.Logge
 		return nil, fmt.Errorf("unknown authentication %v", cfg.Authentication)
 	}
 
-	return newBlobEventHandler(cfg.EventHub.EndPoint, cfg.Logs.ContainerName, cfg.Traces.ContainerName, bc, logger),
+	return newBlobEventHandler(cfg.EventHub.EndPoint, cfg.Logs.ContainerName, bc, logger),
 		nil
 }

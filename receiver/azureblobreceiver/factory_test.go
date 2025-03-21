@@ -22,16 +22,6 @@ func TestNewFactory(t *testing.T) {
 	assert.NotNil(t, f)
 }
 
-func TestCreateTraces(t *testing.T) {
-	f := NewFactory()
-	ctx := context.Background()
-	params := receivertest.NewNopSettings(metadata.Type)
-	receiver, err := f.CreateTraces(ctx, params, getConfig(), consumertest.NewNop())
-
-	require.NoError(t, err)
-	assert.NotNil(t, receiver)
-}
-
 func TestCreateLogs(t *testing.T) {
 	f := NewFactory()
 	ctx := context.Background()
@@ -42,25 +32,10 @@ func TestCreateLogs(t *testing.T) {
 	assert.NotNil(t, receiver)
 }
 
-func TestTracesAndLogsReceiversAreSame(t *testing.T) {
-	f := NewFactory()
-	ctx := context.Background()
-	params := receivertest.NewNopSettings(metadata.Type)
-	config := getConfig()
-	logsReceiver, err := f.CreateLogs(ctx, params, config, consumertest.NewNop())
-	require.NoError(t, err)
-
-	tracesReceiver, err := f.CreateTraces(ctx, params, config, consumertest.NewNop())
-	require.NoError(t, err)
-
-	assert.Equal(t, logsReceiver, tracesReceiver)
-}
-
 func getConfig() component.Config {
 	return &Config{
 		Authentication:   "connection_string",
 		ConnectionString: goodConnectionString,
 		Logs:             LogsConfig{ContainerName: logsContainerName},
-		Traces:           TracesConfig{ContainerName: tracesContainerName},
 	}
 }
